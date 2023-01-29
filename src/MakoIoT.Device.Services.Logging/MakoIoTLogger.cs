@@ -8,23 +8,14 @@ namespace MakoIoT.Device.Services.Logging
 {
     public class MakoIoTLogger : ILogger
     {
-        public string LoggerName { get; set; }
+        public string LoggerName { get; }
 
-        public LogLevel MinLogLevel { get; set; }
+        public LogLevel MinLogLevel { get; }
 
-        public static MakoIoTLogger Create(string name, LoggerConfig loggerConfig)
-        {
-            return new MakoIoTLogger
-            {
-                LoggerName = name,
-                MinLogLevel = loggerConfig.GetLogLevel(name)
-            };
-        }
-
-        protected MakoIoTLogger()
+        public MakoIoTLogger(LoggerConfig loggerConfig)
         {
             LoggerName = nameof(MakoIoTLogger);
-            MinLogLevel = LogLevel.Debug;
+            MinLogLevel = loggerConfig.GetLogLevel(LoggerName); // TODO: logger config per name?
         }
 
         protected virtual void Write(string message)
@@ -34,27 +25,29 @@ namespace MakoIoT.Device.Services.Logging
 
         public virtual void Log(LogLevel logLevel, EventId eventId, string state, Exception exception, MethodInfo format)
         {
-            if (logLevel >= MinLogLevel)
+            if (logLevel < MinLogLevel)
             {
-                string msg;
-                if (format == null)
-                {
-                    msg = exception == null ? state : $"{state} {exception}";
-                }
-                else
-                {
-                    msg = (string)format.Invoke(null, new object[] { LoggerName, logLevel, eventId, state, exception });
-                }
-
-                Write(msg);
+                return;
             }
+
+            string msg;
+            if (format == null)
+            {
+                msg = exception == null ? state : $"{state} {exception}";
+            }
+            else
+            {
+                msg = (string)format.Invoke(null, new object[] { LoggerName, logLevel, eventId, state, exception });
+            }
+
+            Write(msg);
         }
 
         public bool IsEnabled(LogLevel logLevel) => logLevel >= MinLogLevel;
 
         public static void InitLogging()
         {
-            LoggerExtensions.MessageFormatter = typeof(MakoIoTLogger).GetMethod("Formatter");
+            LoggerExtensions.MessageFormatter = typeof(MakoIoTLogger).GetMethod(nameof(Formatter));
         }
 
         public static string Formatter(string className, LogLevel logLevel, EventId eventId, string state,
