@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using MakoIoT.Device.Services.DependencyInjection;
-using MakoIoT.Device.Services.Interface;
+﻿using MakoIoT.Device.Services.Interface;
 using MakoIoT.Device.Services.Logging.Configuration;
 using Microsoft.Extensions.Logging;
+using nanoFramework.DependencyInjection;
 
 namespace MakoIoT.Device.Services.Logging.Extensions
 {
@@ -10,20 +9,14 @@ namespace MakoIoT.Device.Services.Logging.Extensions
     {
         public static IDeviceBuilder AddLogging(this IDeviceBuilder builder)
         {
-            return AddLogging(builder, new LoggerConfig(LogLevel.Debug, new Hashtable
-            {
-                { "DI", LogLevel.Debug }
-            }));
+            return AddLogging(builder, new LoggerConfig(LogLevel.Debug));
         }
 
         public static IDeviceBuilder AddLogging(this IDeviceBuilder builder, LoggerConfig loggerConfig)
         {
-            DI.Register(typeof(ILogger), typeof(MakoIoTLogger), Lifetime.Transient, containingClass =>
-                MakoIoTLogger.Create(containingClass.Name, loggerConfig));
-
+            builder.Services.AddSingleton(typeof(LoggerConfig), loggerConfig);
+            builder.Services.AddTransient(typeof(ILogger), typeof(MakoIoTLogger));
             MakoIoTLogger.InitLogging();
-            DI.Logger = MakoIoTLogger.Create("DI", loggerConfig);
-
             return builder;
         }
     }
