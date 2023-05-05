@@ -1,4 +1,5 @@
-# Project readme
+#  Mako-IoT.Device.Services.Logging
+Configurable logger implementation based on Microsoft.Extensions.Logging.ILogger interface.
 
 ## How to manually sync fork
 - Clone repository and navigate into folder
