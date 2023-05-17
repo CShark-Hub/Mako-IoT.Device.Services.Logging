@@ -18,12 +18,12 @@ namespace MakoIoT.Device.Services.Logging.Mocks
             Services = new ServiceCollection();
         }
 
-        public IDevice Build()
+        public IDeviceBuilder ConfigureDI(ConfigureDIDelegate configureDiAction)
         {
             throw new NotImplementedException();
         }
 
-        public IDeviceBuilder ConfigureDI(Action configureDiAction)
+        public IDevice Build()
         {
             throw new NotImplementedException();
         }

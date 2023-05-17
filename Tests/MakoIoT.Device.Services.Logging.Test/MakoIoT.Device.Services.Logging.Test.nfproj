@@ -30,7 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MakoIoT.Device.Services.Interface">
-      <HintPath>..\..\packages\MakoIoT.Device.Services.Interface.1.0.23.51280\lib\MakoIoT.Device.Services.Interface.dll</HintPath>
+      <HintPath>..\..\packages\MakoIoT.Device.Services.Interface.1.0.30.59281\lib\MakoIoT.Device.Services.Interface.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>..\..\packages\nanoFramework.CoreLibrary.1.14.2\lib\mscorlib.dll</HintPath>
@@ -42,10 +42,10 @@
       <HintPath>..\..\packages\nanoFramework.Logging.1.1.63\lib\nanoFramework.Logging.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.TestFramework">
-      <HintPath>..\..\packages\nanoFramework.TestFramework.2.1.59\lib\nanoFramework.TestFramework.dll</HintPath>
+      <HintPath>..\..\packages\nanoFramework.TestFramework.2.1.81\lib\nanoFramework.TestFramework.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.UnitTestLauncher">
-      <HintPath>..\..\packages\nanoFramework.TestFramework.2.1.59\lib\nanoFramework.UnitTestLauncher.exe</HintPath>
+      <HintPath>..\..\packages\nanoFramework.TestFramework.2.1.81\lib\nanoFramework.UnitTestLauncher.exe</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -62,11 +62,4 @@
       <ProjectConfigurationsDeclaredAsItems />
     </ProjectCapabilities>
   </ProjectExtensions>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>Update the Import path in nfproj to the correct nanoFramework.TestFramework NuGet package folder.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\nanoFramework.TestFramework.2.1.59\build\nanoFramework.TestFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\nanoFramework.TestFramework.2.1.59\build\nanoFramework.TestFramework.targets'))" />
-  </Target>
-  <Import Project="..\..\packages\nanoFramework.TestFramework.2.1.59\build\nanoFramework.TestFramework.targets" Condition="Exists('..\..\packages\nanoFramework.TestFramework.2.1.59\build\nanoFramework.TestFramework.targets')" />
 </Project>
