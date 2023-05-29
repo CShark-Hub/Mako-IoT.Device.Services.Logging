@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 using MakoIoT.Device.Services.Logging.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,12 +19,12 @@ namespace MakoIoT.Device.Services.Logging
 
         protected virtual void Write(string message)
         {
-            Debug.WriteLine(message);
+            Console.WriteLine(message);
         }
 
         public virtual void Log(LogLevel logLevel, EventId eventId, string state, Exception exception, MethodInfo format)
         {
-            if (logLevel < MinLogLevel)
+            if (!IsEnabled(logLevel))
             {
                 return;
             }
