@@ -1,13 +1,37 @@
 #  Mako-IoT.Device.Services.Logging
-Configurable logger implementation based on Microsoft.Extensions.Logging.ILogger interface.
+Configurable logger implementation based on Microsoft.Extensions.Logging.ILogger interface. Outputs log into console. Filters messages based on configured log level.
 
-## How to manually sync fork
-- Clone repository and navigate into folder
-- From command line execute bellow commands
-- **git remote add upstream https://github.com/CShark-Hub/Mako-IoT.Base.git**
-- **git fetch upstream**
-- **git rebase upstream/main**
-- If there are any conflicts, resolve them
-  - After run **git rebase --continue**
-  - Check for conflicts again
-- **git push -f origin main**
+## Usage
+```c#
+using Microsoft.Extensions.Logging;
+
+public class MyService
+{
+    private readonly ILogger _logger;
+   
+    public MyService(ILogger logger)
+    {
+        _logger = logger;
+    }
+
+    public void DoSomething()
+    {
+        try
+        {
+            _logger.LogDebug("Starting...");
+           //   
+        }
+        catch(Exception ex)
+        {
+          _logger.LogError("Error occured", ex);
+        }
+    }
+}
+```
+Register logger in [_DeviceBuilder_](https://github.com/CShark-Hub/Mako-IoT.Device)
+```c#
+DeviceBuilder.Create()
+  .AddLogging(new LoggerConfig(LogLevel.Debug))
+  .Build()
+  .Start();
+```
