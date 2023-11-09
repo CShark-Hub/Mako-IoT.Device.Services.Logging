@@ -1,5 +1,5 @@
 using MakoIoT.Device.Services.Logging.Mocks;
-using nanoFramework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using nanoFramework.TestFramework;
 using Microsoft.Extensions.Logging;
 
