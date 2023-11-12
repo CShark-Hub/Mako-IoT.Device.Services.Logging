@@ -1,7 +1,7 @@
 ﻿using MakoIoT.Device.Services.Interface;
 using MakoIoT.Device.Services.Logging.Configuration;
 using Microsoft.Extensions.Logging;
-using nanoFramework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MakoIoT.Device.Services.Logging.Extensions
 {
