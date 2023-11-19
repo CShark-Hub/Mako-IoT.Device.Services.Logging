@@ -1,32 +1,33 @@
 ﻿using System.Collections;
-using Microsoft.Extensions.Logging;
+using MakoIoT.Device.Services.Interface;
 
 namespace MakoIoT.Device.Services.Logging.Configuration
 {
     public class LoggerConfig
     {
-        public LogLevel DefaultMinLogLevel { get; }
+        public LogEventLevel DefaultMinLogLevel { get; }
         public Hashtable Loggers { get; }
 
-        public LoggerConfig(LogLevel defaultMinLogLevel)
+        public LoggerConfig(LogEventLevel defaultMinLogLevel)
         {
             DefaultMinLogLevel = defaultMinLogLevel;
         }
 
-        public LoggerConfig(LogLevel defaultMinLogLevel, Hashtable loggers) : this(defaultMinLogLevel)
+        public LoggerConfig(LogEventLevel defaultMinLogLevel, Hashtable loggers) : this(defaultMinLogLevel)
         {
             Loggers = loggers;
         }
 
-        public LoggerConfig() : this(LogLevel.Information)
+        public LoggerConfig() : this(LogEventLevel.Information)
         {
 
         }
 
-        public LogLevel GetLogLevel(string name)
+        public LogEventLevel GetLogLevel(string name)
         {
             if (Loggers != null && Loggers.Contains(name))
-                return (LogLevel)Loggers[name];
+                return (LogEventLevel)Loggers[name];
+
             return DefaultMinLogLevel;
         }
     }
