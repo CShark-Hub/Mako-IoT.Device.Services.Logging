@@ -1,7 +1,7 @@
+using MakoIoT.Device.Services.Interface;
 using MakoIoT.Device.Services.Logging.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using nanoFramework.TestFramework;
-using Microsoft.Extensions.Logging;
 
 namespace MakoIoT.Device.Services.Logging.Extensions
 {
@@ -16,7 +16,7 @@ namespace MakoIoT.Device.Services.Logging.Extensions
             DeviceBuilderExtension.AddLogging(mockBuilder);
 
             var serviceProvider = mockBuilder.Services.BuildServiceProvider();
-            var imp = serviceProvider.GetService(typeof(ILogger));
+            var imp = serviceProvider.GetService(typeof(ILog));
             Assert.IsNotNull(imp);
         }
     }
