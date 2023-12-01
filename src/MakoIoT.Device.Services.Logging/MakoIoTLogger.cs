@@ -1,70 +1,161 @@
 ﻿using System;
 using System.Reflection;
+using MakoIoT.Device.Services.Interface;
 using MakoIoT.Device.Services.Logging.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MakoIoT.Device.Services.Logging
 {
-    public class MakoIoTLogger : ILogger
+    internal sealed class MakoIoTLogger : ILog
     {
-        public string LoggerName { get; }
+        private readonly LoggerConfig _loggerConfig;
+        private readonly ILogSink[] _sinks;
 
-        public LogLevel MinLogLevel { get; }
+        public LogEventLevel MinLogEventLevel { get; }
 
-        public MakoIoTLogger(LoggerConfig loggerConfig)
+        public MakoIoTLogger(IServiceProvider serviceProvider)
         {
-            LoggerName = nameof(MakoIoTLogger);
-            MinLogLevel = loggerConfig.GetLogLevel(LoggerName); // TODO: logger config per name?
+            var sinks = serviceProvider.GetServices(typeof(ILogSink));
+            var sinksArray = new ILogSink[sinks.Length];
+            for (int i = 0; i < sinks.Length; i++)
+            {
+                sinksArray[i] = (ILogSink)sinks[i];
+            }
+            _sinks = sinksArray;
+
+            _loggerConfig = serviceProvider.GetService(typeof(LoggerConfig)) as LoggerConfig ?? new LoggerConfig();
+            MinLogEventLevel = _loggerConfig.GetLogLevel(nameof(MakoIoTLogger));
         }
 
-        protected virtual void Write(string message)
+        public void Trace(string message, Exception exception, MethodInfo format)
         {
-            Console.WriteLine(message);
+            Log(LogEventLevel.Trace, message, exception, format);
         }
 
-        public virtual void Log(LogLevel logLevel, EventId eventId, string state, Exception exception, MethodInfo format)
+        public void Trace(string message)
+        {
+            Log(LogEventLevel.Trace, message, null, null);
+        }
+
+        public void Trace(Exception exception)
+        {
+            Log(LogEventLevel.Trace, null, exception, null);
+        }
+
+        public void Information(string message, Exception exception, MethodInfo format)
+        {
+            Log(LogEventLevel.Information, message, exception, format);
+        }
+
+        public void Information(string message)
+        {
+            Log(LogEventLevel.Information, message, null, null);
+        }
+
+        public void Information(Exception exception)
+        {
+            Log(LogEventLevel.Information, null, exception, null);
+        }
+
+        public void Warning(string message, Exception exception, MethodInfo format)
+        {
+            Log(LogEventLevel.Warning, message, exception, format);
+        }
+
+        public void Warning(string message)
+        {
+            Log(LogEventLevel.Warning, message, null, null);
+        }
+
+        public void Warning(Exception exception)
+        {
+            Log(LogEventLevel.Warning, null, exception, null);
+        }
+
+        public void Error(string message, Exception exception, MethodInfo format)
+        {
+            Log(LogEventLevel.Error, message, exception, format);
+        }
+
+        public void Error(string message)
+        {
+            Log(LogEventLevel.Error, message, null, null);
+        }
+
+        public void Error(Exception exception)
+        {
+            Log(LogEventLevel.Error, null, exception, null);
+        }
+
+        public void Critical(string message, Exception exception, MethodInfo format)
+        {
+            Log(LogEventLevel.Critical, message, exception, format);
+        }
+
+        public void Critical(string message)
+        {
+            Log(LogEventLevel.Critical, message, null, null);
+        }
+
+        public void Critical(Exception exception)
+        {
+            Log(LogEventLevel.Critical, null, exception, null);
+        }
+
+        private bool IsEnabled(LogEventLevel logLevel)
+        {
+            if (logLevel >= MinLogEventLevel)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void Log(LogEventLevel logLevel, string state, Exception exception, MethodInfo format)
         {
             if (!IsEnabled(logLevel))
             {
                 return;
             }
 
-            string msg;
-            if (format == null)
+            if (_sinks.Length == 0)
             {
-                msg = exception == null ? state : $"{state} {exception}";
-            }
-            else
-            {
-                msg = (string)format.Invoke(null, new object[] { LoggerName, logLevel, eventId, state, exception });
+                Console.WriteLine("[Critical] No logger sinks provided.");
+                return;
             }
 
-            Write(msg);
+            var msg = format == null
+                ? Formatter(logLevel, state, exception)
+                : (string)format.Invoke(null, new object[] { logLevel, state, exception });
+
+            foreach (var logger in _sinks)
+            {
+                try
+                {
+                    logger.Log(msg);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[Critical] Error when calling logger.");
+                    Console.WriteLine(ex.ToString());
+                }
+            }
         }
-
-        public bool IsEnabled(LogLevel logLevel) => logLevel >= MinLogLevel;
-
-        public static void InitLogging()
+        
+        private static string Formatter(LogEventLevel logLevel, string state, Exception exception)
         {
-            LoggerExtensions.MessageFormatter = typeof(MakoIoTLogger).GetMethod(nameof(Formatter));
-        }
-
-        public static string Formatter(string className, LogLevel logLevel, EventId eventId, string state,
-            Exception exception)
-        {
-            string level = null;
-            switch (logLevel)
+            string level = logLevel switch
             {
-                case LogLevel.Trace: level = "Trace"; break;
-                case LogLevel.Debug: level = "Debug"; break;
-                case LogLevel.Information: level = "Info"; break;
-                case LogLevel.Warning: level = "Warning"; break;
-                case LogLevel.Error: level = "Error"; break;
-                case LogLevel.Critical: level = "Critical"; break;
-                case LogLevel.None: level = "None"; break;
-            }
+                LogEventLevel.Trace => "Trace",
+                LogEventLevel.Information => "Information",
+                LogEventLevel.Warning => "Warning",
+                LogEventLevel.Error => "Error",
+                LogEventLevel.Critical => "Critical",
+                _ => throw new ArgumentOutOfRangeException(nameof(logLevel))
+            };
 
-            return $"[{level}][{className}] {state} {exception?.Message}";
+            return $"[{level}] {state} {exception?.Message}";
         }
     }
 }
