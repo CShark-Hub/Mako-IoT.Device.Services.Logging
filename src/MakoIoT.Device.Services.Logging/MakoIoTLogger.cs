@@ -27,7 +27,7 @@ namespace MakoIoT.Device.Services.Logging
             MinLogEventLevel = _loggerConfig.GetLogLevel(nameof(MakoIoTLogger));
         }
 
-        public void Trace(string message, Exception exception, MethodInfo format)
+        public void Trace(Exception exception, string message, MethodInfo format)
         {
             Log(LogEventLevel.Trace, message, exception, format);
         }
@@ -42,7 +42,12 @@ namespace MakoIoT.Device.Services.Logging
             Log(LogEventLevel.Trace, null, exception, null);
         }
 
-        public void Information(string message, Exception exception, MethodInfo format)
+        public void Trace(Exception exception, string message)
+        {
+            Log(LogEventLevel.Trace, message, null, null);
+        }
+
+        public void Information(Exception exception, string message, MethodInfo format)
         {
             Log(LogEventLevel.Information, message, exception, format);
         }
@@ -57,7 +62,12 @@ namespace MakoIoT.Device.Services.Logging
             Log(LogEventLevel.Information, null, exception, null);
         }
 
-        public void Warning(string message, Exception exception, MethodInfo format)
+        public void Information(Exception exception, string message)
+        {
+            Log(LogEventLevel.Information, message, null, null);
+        }
+
+        public void Warning(Exception exception, string message, MethodInfo format)
         {
             Log(LogEventLevel.Warning, message, exception, format);
         }
@@ -72,7 +82,12 @@ namespace MakoIoT.Device.Services.Logging
             Log(LogEventLevel.Warning, null, exception, null);
         }
 
-        public void Error(string message, Exception exception, MethodInfo format)
+        public void Warning(Exception exception, string message)
+        {
+            Log(LogEventLevel.Warning, message, null, null);
+        }
+
+        public void Error(Exception exception, string message, MethodInfo format)
         {
             Log(LogEventLevel.Error, message, exception, format);
         }
@@ -87,7 +102,13 @@ namespace MakoIoT.Device.Services.Logging
             Log(LogEventLevel.Error, null, exception, null);
         }
 
-        public void Critical(string message, Exception exception, MethodInfo format)
+        public void Error(string message, Exception exception)
+        {
+            Log(LogEventLevel.Error, message, null, null);
+        }
+
+
+        public void Critical(Exception exception, string message, MethodInfo format)
         {
             Log(LogEventLevel.Critical, message, exception, format);
         }
@@ -100,6 +121,11 @@ namespace MakoIoT.Device.Services.Logging
         public void Critical(Exception exception)
         {
             Log(LogEventLevel.Critical, null, exception, null);
+        }
+
+        public void Critical(Exception exception, string message)
+        {
+            Log(LogEventLevel.Critical, message, null, null);
         }
 
         private bool IsEnabled(LogEventLevel logLevel)
