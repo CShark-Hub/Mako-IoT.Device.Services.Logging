@@ -8,10 +8,8 @@ namespace MakoIoT.Device.Services.Logging
 {
     internal sealed class MakoIoTLogger : ILog
     {
-        private readonly LoggerConfig _loggerConfig;
         private readonly ILogSink[] _sinks;
-
-        public LogEventLevel MinLogEventLevel { get; }
+        private LogEventLevel MinLogEventLevel { get; }
 
         public MakoIoTLogger(IServiceProvider serviceProvider)
         {
@@ -23,8 +21,8 @@ namespace MakoIoT.Device.Services.Logging
             }
             _sinks = sinksArray;
 
-            _loggerConfig = serviceProvider.GetService(typeof(LoggerConfig)) as LoggerConfig ?? new LoggerConfig();
-            MinLogEventLevel = _loggerConfig.GetLogLevel(nameof(MakoIoTLogger));
+            var loggerConfig = serviceProvider.GetService(typeof(LoggerConfig)) as LoggerConfig ?? new LoggerConfig();
+            MinLogEventLevel = loggerConfig.GetLogLevel(nameof(MakoIoTLogger));
         }
 
         public void Trace(Exception exception, string message, MethodInfo format)
@@ -171,7 +169,7 @@ namespace MakoIoT.Device.Services.Logging
         
         private static string Formatter(LogEventLevel logLevel, string state, Exception exception)
         {
-            string level = logLevel switch
+            var level = logLevel switch
             {
                 LogEventLevel.Trace => "Trace",
                 LogEventLevel.Information => "Information",
@@ -181,7 +179,7 @@ namespace MakoIoT.Device.Services.Logging
                 _ => throw new ArgumentOutOfRangeException(nameof(logLevel))
             };
 
-            return $"[{level}] {state} {exception?.Message}";
+            return $"[{level}][{DateTime.UtcNow}] {state} {exception?.Message}";
         }
     }
 }
